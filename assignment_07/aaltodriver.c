@@ -57,7 +57,7 @@ static int __init chdev_init(void)
 
     // 2. TODO: allocate chardev region and assign Major number
     // hint: search for alloc_chrdev_region function. Use 0 as the base and "chdev" as the name.
-    err = alloc_chrdev_region(dev, 0, MAX_DEVICE_NUM, "chdev");
+    err = alloc_chrdev_region(&dev, 0, MAX_DEVICE_NUM, "chdev");
 
     // 3. TODO: generate and set the major number
     // hint: use and search for MAJOR macro
@@ -75,7 +75,7 @@ static int __init chdev_init(void)
         
         // 5. TODO: initialize new device
         // hint: search for cdev_init function.
-        cdev_init(chdev_data[i].cdev, chdev_file_ops);
+        cdev_init(&chdev_data[i].cdev, &chdev_file_ops);
 
         // 6. TODO: set the owner of the new device
         // hint: use the chdev array
@@ -83,7 +83,7 @@ static int __init chdev_init(void)
 
         // 7. TODO: add device to the system where "i" is the minor number of the new device
         // hint: search for cdev_add function and MKDEV macro.
-        cdev_add(chdev_data[i].cdev, dev, i);
+        cdev_add(&chdev_data[i].cdev, &dev, i);
         MKDEV(dev_major, i);
 
         // 8. TODO: create device node /dev/chdev-x where "x" should be equal to the minor number
