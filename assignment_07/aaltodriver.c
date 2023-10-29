@@ -19,16 +19,17 @@ static ssize_t chdev_write(struct file *file, const char __user *buf, size_t cou
 // hint: you have to use the functions written in this code
 static const struct file_operations chdev_file_ops = {
     .owner      = THIS_MODULE,
-    .open       = ...,
-    .release    = ..., 
-    .unlocked_ioctl = ...,
-    .read       = ...,
-    .write       = ...
+    .open       = chdev_open,
+    .release    = chdev_release, 
+    .unlocked_ioctl = chdev_ioctl,
+    .read       = chdev_read,
+    .write       = chdev_write
 };
 
 // device data holder, this structure may be extended to hold additional data
 struct mychar_device_data {
     struct cdev cdev;
+    int owner;
 };
 
 
@@ -53,18 +54,18 @@ static int __init chdev_init(void)
     // declare variables
     int err, i;
     dev_t dev;
- 
+
     // 2. TODO: allocate chardev region and assign Major number
     // hint: search for alloc_chrdev_region function. Use 0 as the base and "chdev" as the name.
-    err = ...
+    err = alloc_chrdev_region(dev, 0, MAX_DEVICE_NUM, "chdev");
 
     // 3. TODO: generate and set the major number
     // hint: use and search for MAJOR macro
-    dev_major = ...
+    dev_major = MAJOR(dev);
 
     // 4. TODO: create sysfs class
     // hint: search for class_create function. Use "chdev" for the name.
-    chdev_class = ...
+    chdev_class = class_create(THIS_MODULE, "chdev");
  
     // setting permissions
     chdev_class->dev_uevent = chdev_uevent;
@@ -74,19 +75,20 @@ static int __init chdev_init(void)
         
         // 5. TODO: initialize new device
         // hint: search for cdev_init function.
-        ...
+        cdev_init(chdev_data[i].cdev, chdev_file_ops);
 
         // 6. TODO: set the owner of the new device
         // hint: use the chdev array
-        ...
+        chdev_data[i].owner = dev_major;
 
         // 7. TODO: add device to the system where "i" is the minor number of the new device
         // hint: search for cdev_add function and MKDEV macro.
-        ...
+        cdev_add(chdev_data[i].cdev, dev, i);
+        MKDEV(dev_major, i);
 
         // 8. TODO: create device node /dev/chdev-x where "x" should be equal to the minor number
         // hint: search for device_create function
-        device_create(..., NULL, ..., NULL, "chdev-%d", ...);
+        device_create(chdev_class, NULL, dev, NULL, "chdev-%d", i);
     }
     return 0;
 }
@@ -100,7 +102,7 @@ static void __exit chdev_exit(void)
     for (i = 0; i < MAX_DEVICE_NUM; i++) {
         // 9. TODO: add the right parameters to the device_destroy function. 
         // hint: search for device_destroy function
-        ...
+        device_destroy(chdev_class, i);
     }
 
     class_unregister(chdev_class);
@@ -172,7 +174,7 @@ static ssize_t chdev_write(struct file *file, const char __user *buf, size_t cou
 }
 
 MODULE_LICENSE("GPL");
-MODULE_AUTHOR("<Your name here>");
+MODULE_AUTHOR("Po-Sheng Cheng");
 
 module_init(chdev_init);
 module_exit(chdev_exit);
