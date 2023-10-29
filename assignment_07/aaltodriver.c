@@ -29,7 +29,6 @@ static const struct file_operations chdev_file_ops = {
 // device data holder, this structure may be extended to hold additional data
 struct mychar_device_data {
     struct cdev cdev;
-    int owner;
 };
 
 
@@ -79,12 +78,11 @@ static int __init chdev_init(void)
 
         // 6. TODO: set the owner of the new device
         // hint: use the chdev array
-        chdev_data[i].owner = dev_major;
+        chdev_data[i].cdev.owner = THIS_MODULE;
 
         // 7. TODO: add device to the system where "i" is the minor number of the new device
         // hint: search for cdev_add function and MKDEV macro.
-        cdev_add(&chdev_data[i].cdev, dev, i);
-        MKDEV(dev_major, i);
+        cdev_add(&chdev_data[i].cdev, MKDEV(dev_major, i), 1);
 
         // 8. TODO: create device node /dev/chdev-x where "x" should be equal to the minor number
         // hint: search for device_create function
