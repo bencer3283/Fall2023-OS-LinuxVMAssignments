@@ -101,7 +101,7 @@ static void __exit chdev_exit(void)
     for (i = 0; i < MAX_DEVICE_NUM; i++) {
         // 9. TODO: add the right parameters to the device_destroy function. 
         // hint: search for device_destroy function
-        device_destroy(chdev_class, i);
+        device_destroy(chdev_class, MKDEV(dev_major, i));
     }
 
     class_unregister(chdev_class);
