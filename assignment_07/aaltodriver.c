@@ -83,7 +83,7 @@ static int __init chdev_init(void)
 
         // 7. TODO: add device to the system where "i" is the minor number of the new device
         // hint: search for cdev_add function and MKDEV macro.
-        cdev_add(&chdev_data[i].cdev, &dev, i);
+        cdev_add(&chdev_data[i].cdev, dev, i);
         MKDEV(dev_major, i);
 
         // 8. TODO: create device node /dev/chdev-x where "x" should be equal to the minor number
