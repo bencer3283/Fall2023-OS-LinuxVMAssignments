@@ -12,7 +12,7 @@ typedef struct {
     Function function; // Pointer to the function to execute
     void *args; // Arguments for the function
     int run_safely; // Argument that will specify if job should be executed safely using job_lock.
-    int should_free; // Argument that will specify if *arags should be freed after the execution is done.
+    int should_free; // Argument that will specify if *args should be freed after the execution is done.
     int is_freed; // Argument that will specify if the *args is freed already.
 } Job;
 
