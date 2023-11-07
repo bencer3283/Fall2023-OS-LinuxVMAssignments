@@ -1,0 +1,5 @@
+.vscode/*
+outputs/*
+test
+test.o
+threadpool.o

@@ -2,7 +2,7 @@
 
 CC = gcc
 CFLAGS = -Wall -Wextra -g -lpthread
-LDFLAGS = -lpthread
+LDFLAGS = -lpthread -pthread
 
 # Source files and object files
 SRCS = threadpool.c test.c

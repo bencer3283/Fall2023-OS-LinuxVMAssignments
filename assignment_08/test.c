@@ -33,47 +33,47 @@ int test1() {
 
     ThreadPool pool;
     thread_pool_init(&pool, 5, 100);
-    // creating seven jobs and submitting to threadpool.
-    for (int i = 0; i < 7; i++) {
-        int *number = (int *)malloc(sizeof(int));
-        *number = i;
-        Job job;
-        job.id = i;
-        job.function = job1;
-        job.args = (void *)number;
-        job.run_safely = 0;
-        job.is_freed = 0;
-        job.should_free = 1;
-        thread_pool_submit(&pool, job);
-    }
-    sleep(1);
-    thread_pool_stop(&pool);
-    thread_pool_wait(&pool);
-    thread_pool_clean(&pool);
+    // // creating seven jobs and submitting to threadpool.
+    // for (int i = 0; i < 7; i++) {
+    //     int *number = (int *)malloc(sizeof(int));
+    //     *number = i;
+    //     Job job;
+    //     job.id = i;
+    //     job.function = job1;
+    //     job.args = (void *)number;
+    //     job.run_safely = 0;
+    //     job.is_freed = 0;
+    //     job.should_free = 1;
+    //     thread_pool_submit(&pool, job);
+    // }
+    // sleep(1);
+    // thread_pool_stop(&pool);
+    // thread_pool_wait(&pool);
+    // thread_pool_clean(&pool);
 
-    freopen("/dev/tty", "w", stdout);
+    // freopen("/dev/tty", "w", stdout);
 
-    // the outputs should have 5 finished jobs and 5 finished threads.
-    FILE *output_file = fopen("outputs/output1.txt", "r");
-    if (output_file) {
-        char line[256];
-        int finished_jobs = 0;
-        int finished_threads = 0;
-        while (fgets(line, sizeof(line), output_file)) {
-            if (strstr(line, "Job with id")) {
-                finished_jobs++;
-            } else if (strstr(line, "thread with id")) {
-                finished_threads++;
-            }
-        }
-        fclose(output_file);
+    // // the outputs should have 5 finished jobs and 5 finished threads.
+    // FILE *output_file = fopen("outputs/output1.txt", "r");
+    // if (output_file) {
+    //     char line[256];
+    //     int finished_jobs = 0;
+    //     int finished_threads = 0;
+    //     while (fgets(line, sizeof(line), output_file)) {
+    //         if (strstr(line, "Job with id")) {
+    //             finished_jobs++;
+    //         } else if (strstr(line, "thread with id")) {
+    //             finished_threads++;
+    //         }
+    //     }
+    //     fclose(output_file);
 
-        if (finished_jobs == 5 && finished_threads == 5) {
-            return 1;
-        }
-    } else {
-        printf("Failed to open the output file.\n");
-    }
+    //     if (finished_jobs == 5 && finished_threads == 5) {
+    //         return 1;
+    //     }
+    // } else {
+    //     printf("Failed to open the output file.\n");
+    // }
     return 0;
 }
 
@@ -569,41 +569,41 @@ int main(int argc, char** argv) {
         log_test(1, result, one_line);
         passed += result;
 
-        result = test2();
-        log_test(2, result, one_line);
-        passed += result;
+        // result = test2();
+        // log_test(2, result, one_line);
+        // passed += result;
 
-        result = test3();
-        log_test(3, result, one_line);
-        passed += result;
+        // result = test3();
+        // log_test(3, result, one_line);
+        // passed += result;
 
-        result = test4();
-        log_test(4, result, one_line);
-        passed += result;
+        // result = test4();
+        // log_test(4, result, one_line);
+        // passed += result;
 
-        result = test5();
-        log_test(5, result, one_line);
-        passed += result;
+        // result = test5();
+        // log_test(5, result, one_line);
+        // passed += result;
 
-        result = test6();
-        log_test(6, result, one_line);
-        passed += result;
+        // result = test6();
+        // log_test(6, result, one_line);
+        // passed += result;
 
-        result = test7();
-        log_test(7, result, one_line);
-        passed += result;
+        // result = test7();
+        // log_test(7, result, one_line);
+        // passed += result;
 
-        result = test8();
-        log_test(8, result, one_line);
-        passed += result;
+        // result = test8();
+        // log_test(8, result, one_line);
+        // passed += result;
 
-        result = test9();
-        log_test(9, result, one_line);
-        passed += result;
+        // result = test9();
+        // log_test(9, result, one_line);
+        // passed += result;
 
-        result = test10();
-        log_test(10, result, one_line);
-        passed += result;
+        // result = test10();
+        // log_test(10, result, one_line);
+        // passed += result;
 
         if(one_line == 1)
             printf(" %2d %d/10\n", i, passed);

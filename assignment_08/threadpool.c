@@ -1,4 +1,6 @@
 #include "threadpool.h"
+#include <stdlib.h>
+#include <stdio.h>
 
 void thread_pool_init(ThreadPool *pool, int num_threads, int job_size) {
     pool = (ThreadPool*) malloc(sizeof(ThreadPool));
@@ -14,9 +16,10 @@ void thread_pool_init(ThreadPool *pool, int num_threads, int job_size) {
     pool->job_lock = (pthread_mutex_t)PTHREAD_MUTEX_INITIALIZER;
     sem_init(&pool->jobs_available, 0, num_threads);
 
+    WorkerInput args[num_threads];
     for(int i = 0; i < num_threads; i++) {
-        WorkerInput arg = {.pool = pool, .thread = &pool->threads[i].thread};
-        pthread_create(&pool->threads[i].thread, NULL, worker_thread, (void*) &arg);
+        args[i] = (WorkerInput){.pool = pool, .thread = pool->threads + i};
+        pthread_create(&pool->threads[i].thread, NULL, worker_thread, (void*) args+i);
         pool->threads[i].id = i;
     }
 }
@@ -24,7 +27,7 @@ void thread_pool_init(ThreadPool *pool, int num_threads, int job_size) {
 void thread_pool_submit(ThreadPool *pool, Job job) {
     pthread_mutex_lock(&pool->lock);
     if(pool->job_count >= pool->job_size) {
-        printf('%c', 'job queue is full!\n');
+        printf('job queue is full!\n');
         if(job.should_free) {
             free(job.args);
             job.is_freed = 1;
@@ -62,11 +65,12 @@ void* worker_thread(void* args) {
             free(job.args);
             job.is_freed = 1;
         }
-        break;
+        sem_post(&pool->jobs_available);
+        printf('thread with id %d is finished.\n', thread->id);
+        free(input);
     }
 
-    printf('thread with id %d is finished.\n', thread->id);
-    free(input);
+
 }
 
 void thread_pool_stop(ThreadPool *pool) {
@@ -84,6 +88,10 @@ void thread_pool_clean(ThreadPool *pool) {
             free(pool->jobs[i].args);
         }
     }
+
+    sem_destroy(&pool->jobs_available);
+    pthread_mutex_destroy(&pool->lock);
+    pthread_mutex_destroy(&pool->job_lock);
 
     free(pool->jobs);
     free(pool->threads);
