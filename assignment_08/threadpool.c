@@ -5,11 +5,11 @@
 void thread_pool_init(ThreadPool *pool, int num_threads, int job_size) {
     pool = (ThreadPool*) malloc(sizeof(ThreadPool));
 
-    pool->jobs = (Job*) calloc(job_size, sizeof(Job));
+    pool->jobs = (Job*) malloc(job_size * sizeof(Job));
     pool->job_size = job_size;
     pool->job_count = 0;
 
-    pool->threads = (Thread*) calloc(num_threads, sizeof(Thread));
+    pool->threads = (Thread*) malloc(num_threads * sizeof(Thread));
     pool->num_threads = num_threads;
 
     pool->lock = (pthread_mutex_t)PTHREAD_MUTEX_INITIALIZER;
@@ -18,10 +18,14 @@ void thread_pool_init(ThreadPool *pool, int num_threads, int job_size) {
 
     WorkerInput args[num_threads];
     for(int i = 0; i < num_threads; i++) {
-        args[i] = (WorkerInput){.pool = pool, .thread = pool->threads + i};
-        pthread_create(&pool->threads[i].thread, NULL, worker_thread, (void*) args+i);
+        args[i] = (WorkerInput){.pool = pool, .thread = &pool->threads[i]};
+    }
+    for(int i = 0; i < num_threads; i++) {
+        //pthread_create(&pool->threads[i].thread, NULL, worker_thread, (void*) &args[i]);
         pool->threads[i].id = i;
     }
+
+    return 0;
 }
 
 void thread_pool_submit(ThreadPool *pool, Job job) {
@@ -50,24 +54,24 @@ void* worker_thread(void* args) {
     {
         sem_wait(&pool->jobs_available);
         if(pool->stop_requested) break;
-        pthread_mutex_lock(&pool->lock);
-        Job job = pool->jobs[pool->front];
-        if(pool->front < pool->job_size - 2) pool->front =  pool->front + 1;
-        else thread_pool_stop(pool);
-        pthread_mutex_unlock(&pool->lock);
-        if(job.run_safely) {
-            pthread_mutex_lock(&pool->job_lock);
-            job.function(job.args);
-            pthread_mutex_unlock(&pool->job_lock);
-        }
-        else job.function(job.args);
-        if(job.should_free) {
-            free(job.args);
-            job.is_freed = 1;
-        }
-        sem_post(&pool->jobs_available);
-        printf('thread with id %d is finished.\n', thread->id);
-        free(input);
+        // pthread_mutex_lock(&pool->lock);
+        // Job job = pool->jobs[pool->front];
+        // if(pool->front < pool->job_size - 2) pool->front =  pool->front + 1;
+        // else thread_pool_stop(pool);
+        // pthread_mutex_unlock(&pool->lock);
+        // if(job.run_safely) {
+        //     pthread_mutex_lock(&pool->job_lock);
+        //     job.function(job.args);
+        //     pthread_mutex_unlock(&pool->job_lock);
+        // }
+        // else job.function(job.args);
+        // if(job.should_free) {
+        //     free(job.args);
+        //     job.is_freed = 1;
+        // }
+        // sem_post(&pool->jobs_available);
+        // printf('thread with id %d is finished.\n', thread->id);
+        // free(input);
     }
 
 
