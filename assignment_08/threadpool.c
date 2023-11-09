@@ -16,15 +16,10 @@ void thread_pool_init(ThreadPool *pool, int num_threads, int job_size) {
     sem_init(&pool->jobs_available, 0, 0); //?
     pool->stop_requested = 0;
 
-    // WorkerInput* args = (WorkerInput*) malloc(sizeof(WorkerInput) * num_threads);
-    // for(int i = 0; i < num_threads; i++) {
-    //     args[i] = (WorkerInput){.pool = pool, .thread = &pool->threads[i]};
-    // }
     for(int i = 0; i < num_threads; i++) {
         WorkerInput* arg = (WorkerInput*) malloc(sizeof(WorkerInput));
         arg->pool = pool;
         arg->thread = &pool->threads[i];
-        //*arg = (WorkerInput){.pool = pool, .thread = &pool->threads[i]};
         pthread_create(&pool->threads[i].thread, NULL, worker_thread, (void*) arg);
         pool->threads[i].id = i;
     }
@@ -73,12 +68,13 @@ void* worker_thread(void* args) {
         if(job.should_free) {
             free(job.args);
             job.is_freed = 1;
+            pool->jobs[job.id].is_freed = 1;
         }
         // sem_post(&pool->jobs_available);  //?
         
     }
     printf("thread with id %d is finished.\n", thread->id);
-    //free(args);
+    free(args);
 
 }
 
@@ -95,7 +91,7 @@ void thread_pool_wait(ThreadPool *pool) {
 }
 void thread_pool_clean(ThreadPool *pool) {
     for(int i = 0; i < pool->job_count; i++) {
-        if(pool->jobs[i].should_free == 1 && pool->jobs[i].is_freed == 0) {
+        if(pool->jobs[i].should_free && !pool->jobs[i].is_freed) {
             free(pool->jobs[i].args);
         }
     }
@@ -106,5 +102,5 @@ void thread_pool_clean(ThreadPool *pool) {
 
     free(pool->jobs);
     free(pool->threads);
-    free(pool);
+    // free(pool);
 }

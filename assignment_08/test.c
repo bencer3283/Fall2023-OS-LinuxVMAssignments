@@ -49,7 +49,7 @@ int test1() {
     sleep(1);
     thread_pool_stop(&pool);
     thread_pool_wait(&pool);
-    //thread_pool_clean(&pool);
+    thread_pool_clean(&pool);
 
     freopen("/dev/tty", "w", stdout);
 
@@ -569,17 +569,17 @@ int main(int argc, char** argv) {
         log_test(1, result, one_line);
         passed += result;
 
-        // result = test2();
-        // log_test(2, result, one_line);
-        // passed += result;
+        result = test2();
+        log_test(2, result, one_line);
+        passed += result;
 
-        // result = test3();
-        // log_test(3, result, one_line);
-        // passed += result;
+        result = test3();
+        log_test(3, result, one_line);
+        passed += result;
 
-        // result = test4();
-        // log_test(4, result, one_line);
-        // passed += result;
+        result = test4();
+        log_test(4, result, one_line);
+        passed += result;
 
         // result = test5();
         // log_test(5, result, one_line);
