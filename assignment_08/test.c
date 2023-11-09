@@ -554,7 +554,7 @@ void log_test(int test_id, int test_result, int one_line) {
 
 int main(int argc, char** argv) {
 
-    int one_line = 1;
+    int one_line = 0;
     
     int repeat = 1;
     if(argc == 2)
@@ -589,21 +589,21 @@ int main(int argc, char** argv) {
         log_test(6, result, one_line);
         passed += result;
 
-        // result = test7();
-        // log_test(7, result, one_line);
-        // passed += result;
+        result = test7();
+        log_test(7, result, one_line);
+        passed += result;
 
-        // result = test8();
-        // log_test(8, result, one_line);
-        // passed += result;
+        result = test8();
+        log_test(8, result, one_line);
+        passed += result;
 
-        // result = test9();
-        // log_test(9, result, one_line);
-        // passed += result;
+        result = test9();
+        log_test(9, result, one_line);
+        passed += result;
 
-        // result = test10();
-        // log_test(10, result, one_line);
-        // passed += result;
+        result = test10();
+        log_test(10, result, one_line);
+        passed += result;
 
         if(one_line == 1)
             printf(" %2d %d/10\n", i, passed);
