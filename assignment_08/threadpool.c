@@ -27,6 +27,7 @@ void thread_pool_init(ThreadPool *pool, int num_threads, int job_size) {
 
 void thread_pool_submit(ThreadPool *pool, Job job) {
     pthread_mutex_lock(&pool->lock);
+
     if(pool->job_count >= pool->job_size) {
         printf('job queue is full!\n');
         if(job.should_free) {
@@ -40,6 +41,7 @@ void thread_pool_submit(ThreadPool *pool, Job job) {
         sem_post(&pool->jobs_available);
     }
     pthread_mutex_unlock(&pool->lock);
+    // printf("%d\n", pool->job_count);
 }
 
 void* worker_thread(void* args) {
@@ -56,8 +58,7 @@ void* worker_thread(void* args) {
         if(pool->stop_requested) break;
         pthread_mutex_lock(&pool->lock);
         Job job = pool->jobs[pool->front];
-        if(pool->front < pool->job_size - 2) pool->front++;
-        // else thread_pool_stop(pool);//?
+        if(pool->front < pool->job_size - 1) pool->front++;
         pthread_mutex_unlock(&pool->lock);
         if(job.run_safely) {
             pthread_mutex_lock(&pool->job_lock);
@@ -70,8 +71,6 @@ void* worker_thread(void* args) {
             job.is_freed = 1;
             pool->jobs[job.id].is_freed = 1;
         }
-        // sem_post(&pool->jobs_available);  //?
-        
     }
     printf("thread with id %d is finished.\n", thread->id);
     free(args);
@@ -90,10 +89,12 @@ void thread_pool_wait(ThreadPool *pool) {
     }
 }
 void thread_pool_clean(ThreadPool *pool) {
-    for(int i = 0; i < pool->job_count; i++) {
-        if(pool->jobs[i].should_free && !pool->jobs[i].is_freed) {
-            free(pool->jobs[i].args);
-        }
+    if(pool->job_count > 0) {
+        for(int i = 0; i < pool->job_count; i++) {
+            if(pool->jobs[i].should_free && !pool->jobs[i].is_freed) {
+                free(pool->jobs[i].args);
+            }
+        }        
     }
 
     sem_destroy(&pool->jobs_available);

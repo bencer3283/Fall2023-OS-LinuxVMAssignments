@@ -581,9 +581,9 @@ int main(int argc, char** argv) {
         log_test(4, result, one_line);
         passed += result;
 
-        // result = test5();
-        // log_test(5, result, one_line);
-        // passed += result;
+        result = test5();
+        log_test(5, result, one_line);
+        passed += result;
 
         // result = test6();
         // log_test(6, result, one_line);
