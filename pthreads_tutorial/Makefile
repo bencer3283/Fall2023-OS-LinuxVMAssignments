@@ -1,5 +1,5 @@
 CC = gcc
-CFLAGS = -Wall -Wextra -g -lpthread
+CFLAGS = -Wall -Wextra -g -lpthread -pthread
 LDFLAGS = -lpthread
 
 # Source files and object files

@@ -1,9 +1,8 @@
 # Makefile for compiling threadpool.c and test1.c
 
 CC = gcc
-CFLAGS = -Wall -Wextra -g -lpthread
-LDFLAGS = -lpthread -pthread
-
+CFLAGS = -Wall -Wextra -g -pthread
+LDFLAGS = -pthread 
 # Source files and object files
 SRCS = threadpool.c test.c
 OBJS = $(SRCS:.c=.o)
