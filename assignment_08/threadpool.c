@@ -29,7 +29,7 @@ void thread_pool_submit(ThreadPool *pool, Job job) {
     pthread_mutex_lock(&pool->lock);
 
     if(pool->job_count >= pool->job_size) {
-        printf('job queue is full!\n');
+        printf("job queue is full!\n");
         if(job.should_free) {
             free(job.args);
             job.is_freed = 1;
@@ -41,16 +41,12 @@ void thread_pool_submit(ThreadPool *pool, Job job) {
         sem_post(&pool->jobs_available);
     }
     pthread_mutex_unlock(&pool->lock);
-    // printf("%d\n", pool->job_count);
 }
 
 void* worker_thread(void* args) {
     WorkerInput* input = (WorkerInput*) args;
     ThreadPool* pool = input->pool;
     Thread* thread = input->thread;
-
-    int id = thread->id;
-    int n_job = pool->num_threads;
 
     while (1)
     {
